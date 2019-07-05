@@ -11,8 +11,4 @@ const parcelaSchema = new mongoose.Schema({
 })
 
 module.exports = restful.model('Parcela', parcelaSchema)
-module.exports.parcelaSchema = parcelaSchema
-// descricao: Mesa TokStok
-// nroParcela: 1
-// valor: 99,9
-// pago: false
+
