@@ -1,32 +1,47 @@
 const restful = require('node-restful')
 const mongoose = restful.mongoose
-const parcelaSchema = require('../parcela/parcelaSchema')
 
 const tituloSchema = new mongoose.Schema({
     descricao: { type: String, required: true },
-    qtdVezes: { type: Number, required: true  },
     valor: { type: Number, default: 0 },
     tipoLancamento: { type: String },
-    
     dataInsercao: { type: Date, default: Date.now },
-    
-    // parcelas: [{
-    //     descricao: { type: String, required: true },
-    //     nroParcela: { type: Number, required: true  }
-    //     // valor: { type: Number, default: 0 },
-    //     // pago: { type: Boolean, default: false }
-    // }]
+    dataInicialCobranca: { type: Date, required: true },
 
-    // description: { type: String, require: true },
-    // done: { type: Boolean, required: true, default: false },
-    // createdAt: { type: Date, default: Date.now }
+    parcelas: [{
+        nroParcela: { type: Number, required: true  },
+        dataVencimento: { type: Date, required: true },
+        valor: { type: Number, default: 0 },
+        pago: { type: Boolean, default: false }
+    }]
 })
 
 module.exports = restful.model('Titulo', tituloSchema)
 
  
+/*
+  Exemplo de JSon de inserção. 
 
-// descricao: Mesa TokStok
-// qtdVezes: 10
-// valor: 999
-// tipoLancamento: Debito
+{
+	"descricao": "Mesa Tokstok",
+	"valor": "999.50",
+    "tipoLancamento": "Débito",
+    "dataInsercao": "1460376000",
+    "dataInicialCobranca": "1460376000",
+
+	"parcelas": [{
+        "nroParcela": "1",
+        "dataVencimento": "1460376000",
+        "valor": "99.95",
+        "pago": "false"
+	},
+	{
+        "nroParcela": "2",
+        "dataVencimento": "1460376001",
+        "valor": "99.95",
+        "pago": "false"
+	}]
+}  
+
+
+*/
