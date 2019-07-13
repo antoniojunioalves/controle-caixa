@@ -1,15 +1,15 @@
-# Controle de caixa
+# Controle de caixa API
 
 ### `Como executar`
-Back-end
 ```bash
-cd backend
 npm install
+```
+Para produção:
+```bash
+npm run production
+```
+Para desenvolvimento:
+```bash
 npm run dev
 ```
-o backend ficará disponível na Url [http://localhost:3003](http://localhost:3003) 
-
-Front-end
-```bash
- Em construção
-```
+Local a API ficará disponível na Url [http://localhost:3003](http://localhost:3003) 
