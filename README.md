@@ -1,6 +1,8 @@
 # Controle de caixa API
 
 ### `Como executar`
+É necessário ter o mongo DB executando na máquina local
+
 ```bash
 npm install
 ```
