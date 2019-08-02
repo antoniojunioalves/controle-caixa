@@ -1,5 +1,5 @@
 const server = require('./config/server')
-const database = require('./config/database') 
+const database = require('./config/database')
 
 
 database
@@ -12,5 +12,5 @@ database
     });
   })
   .catch(err => {
-    console.log(`[SERVER] - ${err}`);
+    console.log(`[SERVER - ERROR] - ${err}`);
   });
