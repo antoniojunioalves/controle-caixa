@@ -1,19 +1,21 @@
 const restful = require('node-restful')
 const mongoose = restful.mongoose
 
+const parcelaSchema = new mongoose.Schema({
+    nroParcela: { type: Number, required: true  },
+    mes: { type: Number, required: true },
+    ano: { type: Number, required: true },
+    valor: { type: Number, default: 0 },
+    pago: { type: Boolean, default: false }
+})
+
 const tituloSchema = new mongoose.Schema({
     descricao: { type: String, required: true },
     valor: { type: Number, default: 0 },
     tipoLancamento: { type: String },
     dataInsercao: { type: Date, default: Date.now },
-    dataInicialCobranca: { type: Date, required: true },
 
-    parcelas: [{
-        nroParcela: { type: Number, required: true  },
-        dataVencimento: { type: Date, required: true },
-        valor: { type: Number, default: 0 },
-        pago: { type: Boolean, default: false }
-    }]
+    parcelas: [parcelaSchema]
 })
 
 module.exports = restful.model('Titulo', tituloSchema)
@@ -27,17 +29,18 @@ module.exports = restful.model('Titulo', tituloSchema)
 	"valor": "999.50",
     "tipoLancamento": "Débito",
     "dataInsercao": "1460376000",
-    "dataInicialCobranca": "1460376000",
 
 	"parcelas": [{
         "nroParcela": "1",
-        "dataVencimento": "1460376000",
+        "mes": "6",
+        "ano": "2019",
         "valor": "99.95",
         "pago": "false"
 	},
 	{
         "nroParcela": "2",
-        "dataVencimento": "1460376001",
+        "mes": "7",
+        "ano": "2019",
         "valor": "99.95",
         "pago": "false"
 	}]
