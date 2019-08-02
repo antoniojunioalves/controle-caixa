@@ -11,7 +11,7 @@ Titulo.route('separadoMes', (req, res, next) => {
     if (err) {
       throw err
     }
-    res.status(500).json(docs)
+
     const parcelas = docs.map(({ descricao, tipoLancamento, parcelas }) => {
       const { valor, pago } = parcelas.find(({ mes }) => mes === 6)
 
