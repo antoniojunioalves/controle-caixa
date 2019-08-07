@@ -25,10 +25,10 @@ module.exports = restful.model('Titulo', tituloSchema)
   Exemplo de JSon de inserção.
 
 {
-	  "descricao": "Mesa Tokstok",
-	  "valor": "999.50",
-    "tipoLancamento": "Débito",
-    "dataInsercao": "1460376000",
+	"descricao": "Mesa Tokstok",
+	"valor": "999.50",
+  "tipoLancamento": "Débito",
+  "dataInsercao": "1460376000",
 
 	"parcelas": [{
         "nroParcela": "1",
