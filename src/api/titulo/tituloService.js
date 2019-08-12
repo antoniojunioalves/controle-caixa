@@ -20,7 +20,6 @@ Titulo.route('separadoMes', (req, res, next) => {
 	nMonths[6] = nMonth + 5
 	nMonths[7] = nMonth + 6
 
-	console.log(nMonths)
 	function RetornarDescricaoMes(mes) {
 		switch (mes) {
 			case 1: return 'Janeiro'
@@ -43,41 +42,37 @@ Titulo.route('separadoMes', (req, res, next) => {
 	let totalDebito = 0
 	let totalCredito = 0
 	Titulo.find({ "parcelas.mes": { $in: nMonths } }, function (err, docs) {
-		for (let i = 0; i < nMonths.length; i++) {
+		nMonths.forEach((month) => {
 			totalDebito = 0
 			totalCredito = 0
 
-			const parcelasMes = docs.map(({ descricao, tipoLancamento, parcelas }) => {
-				const parcela = parcelas.find(({ mes }) => mes === parseInt(nMonths[i]))
+			const parcelasMes = []
+			docs.forEach(({ descricao, tipoLancamento, parcelas }) => {
+				parcelas.filter(({ mes }) => mes === month).forEach(({ valor, pago }) => {
+					totalCredito += tipoLancamento === 'Crédito' ? valor : 0
+					totalDebito += tipoLancamento === 'Débito' ? valor : 0
 
-				if (parcela) {
-					totalCredito += tipoLancamento === 'C' ? parcela.valor : 0
-					totalDebito += tipoLancamento === 'D' ? parcela.valor : 0
-
-					return {
+					parcelasMes.push({
 						descricao,
 						tipoLancamento,
-						valor: parcela.valor,
-						pago: parcela.pago
-					}
-				} else {
-					return null
-				}
+						valor,
+						pago
+					})
+				})
 			})
 
-			const parcelasSemNull = parcelasMes.filter(parcela => parcela !== null)
-
-			if (parcelasSemNull) {
-				const mes = {
-					mes: RetornarDescricaoMes(nMonths[i]),
-					totalCredito,
-					totalDebito,
-					parcelas: parcelasSemNull
-				}
-
-				months = [...months, mes]
+			const mes = {
+				mes: RetornarDescricaoMes(month),
+				totalCredito,
+				totalDebito,
+				parcelas: parcelasMes
 			}
-		}
+
+			if (parcelasMes.length) {
+				months.push(mes)
+			}
+		})
+
 		res.status(200).json(months)
 	}).sort({ "descricao": 1 })
 })
