@@ -49,8 +49,8 @@ Titulo.route('separadoMes', (req, res, next) => {
 			const parcelasMes = []
 			docs.forEach(({ descricao, tipoLancamento, parcelas }) => {
 				parcelas.filter(({ mes }) => mes === month).forEach(({ valor, pago }) => {
-					totalCredito += tipoLancamento === 'Crédito' ? valor : 0
-					totalDebito += tipoLancamento === 'Débito' ? valor : 0
+					totalCredito += tipoLancamento === 'C' ? valor : 0
+					totalDebito += tipoLancamento === 'D' ? valor : 0
 
 					parcelasMes.push({
 						descricao,
