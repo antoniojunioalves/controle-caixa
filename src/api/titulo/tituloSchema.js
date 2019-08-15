@@ -45,31 +45,4 @@ module.exports = restful.model('Titulo', tituloSchema)
         "pago": "false"
 	}]
 }
-
-
-**********************************************************
- let meses = []
-
-            let mes = {
-                mes: 6,
-                parcelas:[
-                    {
-                        descricao: "Antônio",
-                        tipoLancamento: "Crédito",
-                        valor: 1000,
-                        pago: false
-                    },{
-                        descricao: "Andréia",
-                        tipoLancamento: "Crédito",
-                        valor: 1500,
-                        pago: false
-                    },{
-                        descricao: "Mesa 1",
-                        tipoLancamento: "Débito",
-                        valor: 100,
-                        pago: false
-                    }
-                ]
-            }
-
 */
