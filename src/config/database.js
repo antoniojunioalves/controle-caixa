@@ -11,7 +11,7 @@ module.exports.createConnectionMongoose = () => {
 
     let stringConnectionDB =
       process.env.NODE_ENV === 'production' ?
-        `mongodb+srv://${process.env.USER_MONGO}:${process.env.PASSWORD_MONGO}@cluster0-afjvm.mongodb.net/process.env.NAME_DB?retryWrites=true&w=majority`
+        `mongodb+srv://${process.env.USER_MONGO}:${process.env.PASSWORD_MONGO}@cluster0-afjvm.mongodb.net/${process.env.NAME_DB}?retryWrites=true&w=majority`
         : 'mongodb://localhost/controleCaixa'
 
     mongoose
