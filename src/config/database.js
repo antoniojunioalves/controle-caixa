@@ -9,10 +9,10 @@ module.exports.createConnectionMongoose = () => {
     }
     mongoose.Promise = global.Promise;  // Feito somente para tirar a advertência 
 
-    let stringConnectionDB = 'mongodb+srv://antoniojunioalves:SENHA@cluster0-afjvm.mongodb.net/controleCaixa?retryWrites=true&w=majority'
-    // process.env.NODE_ENV === 'production' ?
-    //     `mongodb+srv://${process.env.USER_MONGO}:${process.env.PASSWORD_MONGO}@cluster0-afjvm.mongodb.net/test?retryWrites=true&w=majority`
-    //     : 'mongodb://localhost/controleCaixa'
+    let stringConnectionDB =
+      process.env.NODE_ENV === 'production' ?
+        `mongodb+srv://${process.env.USER_MONGO}:${process.env.PASSWORD_MONGO}@cluster0-afjvm.mongodb.net/test?retryWrites=true&w=majority`
+        : 'mongodb://localhost/controleCaixa'
 
     mongoose
       .connect(stringConnectionDB, { useNewUrlParser: true })
