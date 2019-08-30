@@ -76,7 +76,7 @@ Titulo.route('separadoMes', (req, res, next) => {
 		})
 
 		res.status(200).json(months)
-	}).sort({ "descricao": 1 })
+	}).sort({ "tipoLancamento": 1, "descricao": 1 })
 })
 
 module.exports = Titulo
