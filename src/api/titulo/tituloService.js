@@ -108,12 +108,15 @@ Titulo.route('payed', (req, res, next) => {
 			console.log('*****************************************************************')
 			console.log(parcelas)
 			Titulo.updateOne(myquery, newvalues, (err, res) => {
-				if (err) {
-					throw err;
+				if (!err) {
+					console.log('Não deu erro')
+
 				}
 			})
 				.then((response) => { console.log('Sucesso ao atualizar', response) })
 				.catch((error) => { console.log('Erro ao atualizar', error) })
+
+			res.status(200).json(parcelas)
 		}
 	})
 		.catch((error) => { console.log('Deu erro ao buscar', error) })
