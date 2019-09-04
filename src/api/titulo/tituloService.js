@@ -79,4 +79,44 @@ Titulo.route('separadoMes', (req, res, next) => {
 	}).sort({ "tipoLancamento": 1, "descricao": 1 })
 })
 
+Titulo.route('payed', (req, res, next) => {
+	// payed?pay=1&idTitulo=5d646587be4b640017f2abad&idParcela=5d646587be4b640017f2abae
+	const qry = url.parse(req.url, true)
+
+	const payed = qry.query.pay
+	const idTitulo = qry.query.idTitulo
+	const idParcela = qry.query.idParcela
+	console.log('idtitulo', idTitulo)
+	console.log('idParcela', idParcela)
+	console.log('payed', payed)
+
+	Titulo.find({ "_id": { $in: idTitulo } }, function (err, docs) {
+		if (!err) {
+			const parcelas = docs[0].parcelas
+
+			// console.log(p._id)
+			// console.log(idParcela)
+			parcelas.map((p) => {
+				if (p._id == idParcela) {
+					p.pago = payed
+				}
+			})
+
+			const myquery = { _id: idTitulo }
+			const newvalues = { $set: { "parcelas": parcelas } }
+
+			console.log('*****************************************************************')
+			console.log(parcelas)
+			Titulo.updateOne(myquery, newvalues, (err, res) => {
+				if (err) {
+					throw err;
+				}
+			})
+				.then((response) => { console.log('Sucesso ao atualizar', response) })
+				.catch((error) => { console.log('Erro ao atualizar', error) })
+		}
+	})
+		.catch((error) => { console.log('Deu erro ao buscar', error) })
+})
+
 module.exports = Titulo
