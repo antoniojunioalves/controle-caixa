@@ -8,8 +8,23 @@ Titulo.updateOptions({ new: true, runValidators: true })
 
 Titulo.route('separadoMes', (req, res, next) => {
 	const q = url.parse(req.url, true)
-
 	const nMonth = parseInt(q.query.month)
+
+	var currentDate = new Date()
+	var sql = []
+
+	// Colocar mês anterior
+	currentDate.setMonth(currentDate.getMonth() - 1)
+	sql.push({ "parcelas.mes": currentDate.getMonth() + 1, "parcelas.ano": currentDate.getFullYear() })
+
+	// Volto para o mês atual
+	currentDate.setMonth(currentDate.getMonth() + 1)
+
+	for (let qtd = 1; qtd <= nMonth; qtd++) {
+		sql.push({ "parcelas.mes": currentDate.getMonth() + 1, "parcelas.ano": currentDate.getFullYear() })
+		currentDate.setMonth(currentDate.getMonth() + 1)
+	}
+
 	var nMonths = []
 	nMonths[0] = nMonth - 1
 	nMonths[1] = nMonth
@@ -41,7 +56,10 @@ Titulo.route('separadoMes', (req, res, next) => {
 	let months = []
 	let totalDebito = 0
 	let totalCredito = 0
-	Titulo.find({ "parcelas.mes": { $in: nMonths } }, function (err, docs) {
+	Titulo.find({ $or: sql }, function (err, docs) {
+		// Titulo.find({ $or: [{ "parcelas.mes": 8, "parcelas.ano": 2019 }, { "parcelas.mes": 1, "parcelas.ano": 2020 }] }, function (err, docs) {
+		console.log(docs)
+		// Titulo.find({ "parcelas.mes": { $in: nMonths } }, function (err, docs) {
 		nMonths.forEach((month) => {
 			totalDebito = 0
 			totalCredito = 0
@@ -76,7 +94,12 @@ Titulo.route('separadoMes', (req, res, next) => {
 		})
 
 		res.status(200).json(months)
-	}).sort({ "tipoLancamento": 1, "descricao": 1 })
+	}).sort({
+		"ano": 1,
+		"mes": 1,
+		"tipoLancamento": 1,
+		"descricao": 1
+	})
 })
 
 Titulo.route('payed', (req, res, next) => {
