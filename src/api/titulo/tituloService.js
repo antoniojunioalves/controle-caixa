@@ -4,24 +4,46 @@ const url = require('url')
 Titulo.methods(['get', 'post', 'put', 'delete'])
 // new - Quando altera o cliente NÃO retorna o objeto atualizado por default 
 // runValidators - Não valida por default as configurações se é obrigado ou não informar alguma informação 
+
 Titulo.updateOptions({ new: true, runValidators: true })
 
 Titulo.route('separadoMes', (req, res, next) => {
 	const q = url.parse(req.url, true)
-
 	const nMonth = parseInt(q.query.month)
-	var nMonths = []
-	nMonths[0] = nMonth - 1
-	nMonths[1] = nMonth
-	nMonths[2] = nMonth + 1
-	nMonths[3] = nMonth + 2
-	nMonths[4] = nMonth + 3
-	nMonths[5] = nMonth + 4
-	nMonths[6] = nMonth + 5
-	nMonths[7] = nMonth + 6
 
-	function RetornarDescricaoMes(mes) {
-		switch (mes) {
+	var nMonths = []
+	var sql = []
+
+	var currentDate = new Date()
+
+	// Colocar mês anterior
+	currentDate.setMonth(currentDate.getMonth() - 1)
+	sql.push({ "parcelas.mes": currentDate.getMonth() + 1, "parcelas.ano": currentDate.getFullYear() })
+	nMonths.push({ fullYear: currentDate.getFullYear(), month: currentDate.getMonth() + 1 })
+
+	// Volto para o mês atual
+	currentDate.setMonth(currentDate.getMonth() + 1)
+
+	for (let qtd = 1; qtd <= nMonth; qtd++) {
+		sql.push({
+			"parcelas.mes": currentDate.getMonth() + 1,
+			"parcelas.ano": currentDate.getFullYear()
+		})
+
+		nMonths.push({
+			fullYear: currentDate.getFullYear(),
+			month: currentDate.getMonth() + 1
+		})
+
+		currentDate.setMonth(currentDate.getMonth() + 1)
+	}
+
+	nMonths.sort((a, b) => {
+		return a.fullYear - b.fullYear || a.month - b.month;
+	});
+
+	function returnDescriptionMonth(month) {
+		switch (month) {
 			case 1: return 'Janeiro'
 			case 2: return 'Fevereiro'
 			case 3: return 'Março'
@@ -41,30 +63,34 @@ Titulo.route('separadoMes', (req, res, next) => {
 	let months = []
 	let totalDebito = 0
 	let totalCredito = 0
-	Titulo.find({ "parcelas.mes": { $in: nMonths } }, function (err, docs) {
-		nMonths.forEach((month) => {
+	Titulo.find({ $or: sql }, function (err, docs) {
+		nMonths.forEach(({ month, fullYear }) => {
 			totalDebito = 0
 			totalCredito = 0
 
 			const parcelasMes = []
 			docs.forEach(({ descricao, tipoLancamento, parcelas, _id: titulo_id }) => {
-				parcelas.filter(({ mes }) => mes === month).forEach(({ valor, pago, _id: parcela_id }) => {
-					totalCredito += tipoLancamento === 'C' ? valor : 0
-					totalDebito += tipoLancamento === 'D' ? valor : 0
+				// console.log(parcelas.length)
+				parcelas.filter(({ mes, ano }) => (mes === month) && (ano === fullYear))
+					.forEach(({ valor, pago, _id: parcela_id, nroParcela }) => {
+						totalCredito += tipoLancamento === 'C' ? valor : 0
+						totalDebito += tipoLancamento === 'D' ? valor : 0
 
-					parcelasMes.push({
-						parcela_id,
-						titulo_id,
-						descricao,
-						tipoLancamento,
-						valor,
-						pago
+						parcelasMes.push({
+							parcela_id,
+							titulo_id,
+							descricao,
+							qtdTotalParcelas: parcelas.length,
+							nroParcela,
+							tipoLancamento,
+							valor,
+							pago
+						})
 					})
-				})
 			})
 
 			const mes = {
-				mes: RetornarDescricaoMes(month),
+				mes: returnDescriptionMonth(month) + '/' + fullYear.toString().substr(-2),
 				totalCredito,
 				totalDebito,
 				parcelas: parcelasMes
@@ -76,7 +102,12 @@ Titulo.route('separadoMes', (req, res, next) => {
 		})
 
 		res.status(200).json(months)
-	}).sort({ "tipoLancamento": 1, "descricao": 1 })
+	}).sort({
+		"ano": 1,
+		"mes": 1,
+		"tipoLancamento": 1,
+		"descricao": 1
+	})
 })
 
 Titulo.route('payed', (req, res, next) => {
@@ -86,16 +117,11 @@ Titulo.route('payed', (req, res, next) => {
 	const payed = qry.query.pay
 	const idTitulo = qry.query.idTitulo
 	const idParcela = qry.query.idParcela
-	console.log('idtitulo', idTitulo)
-	console.log('idParcela', idParcela)
-	console.log('payed', payed)
 
 	Titulo.find({ "_id": { $in: idTitulo } }, function (err, docs) {
 		if (!err) {
 			const parcelas = docs[0].parcelas
 
-			// console.log(p._id)
-			// console.log(idParcela)
 			parcelas.map((p) => {
 				if (p._id == idParcela) {
 					p.pago = payed
@@ -105,12 +131,9 @@ Titulo.route('payed', (req, res, next) => {
 			const myquery = { _id: idTitulo }
 			const newvalues = { $set: { "parcelas": parcelas } }
 
-			console.log('*****************************************************************')
-			console.log(parcelas)
 			Titulo.updateOne(myquery, newvalues, (err, res) => {
-				if (!err) {
-					console.log('Não deu erro')
-
+				if (err) {
+					throw err
 				}
 			})
 				.then((response) => { console.log('Sucesso ao atualizar', response) })
